@@ -1,5 +1,6 @@
 import CTA from '@/components/CTA/CTA';
 import FAQ from '@/components/FAQ/FAQ';
+import Footer from '@/components/Footer/Footer';
 import GuideList from '@/components/GuideList/GuideList';
 import Hero from '@/components/Hero/Hero';
 import Partner from '@/components/Partner/Partner';
@@ -15,6 +16,7 @@ const page = () => {
             <GuideList />
             <CTA />
             <FAQ/>
+            <Footer/>
         </div>
     );
 };
