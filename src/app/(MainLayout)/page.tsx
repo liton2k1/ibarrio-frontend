@@ -1,3 +1,4 @@
+import CTA from '@/components/CTA/CTA';
 import GuideList from '@/components/GuideList/GuideList';
 import Hero from '@/components/Hero/Hero';
 import Partner from '@/components/Partner/Partner';
@@ -11,6 +12,7 @@ const page = () => {
             <WorkProcess />
             <Partner />
             <GuideList />
+            <CTA />
         </div>
     );
 };
