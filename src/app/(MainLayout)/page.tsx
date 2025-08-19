@@ -1,4 +1,5 @@
 import CTA from '@/components/CTA/CTA';
+import FAQ from '@/components/FAQ/FAQ';
 import GuideList from '@/components/GuideList/GuideList';
 import Hero from '@/components/Hero/Hero';
 import Partner from '@/components/Partner/Partner';
@@ -13,6 +14,7 @@ const page = () => {
             <Partner />
             <GuideList />
             <CTA />
+            <FAQ/>
         </div>
     );
 };

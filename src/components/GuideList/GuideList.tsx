@@ -4,6 +4,7 @@ import Container from "../Container/Container";
 import Image from "next/image";
 import { MoreVertical, Share2, ArrowRight } from "lucide-react";
 import img from "../../../public/images/img (4).png";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 const guides = [
     {
@@ -64,9 +65,13 @@ const GuideList = () => {
                             <button className="bg-[#9E58CD] text-white px-4 py-2 rounded-md text-sm font-medium flex items-center gap-1 cursor-pointer">
                                 Share <Share2 size={16} />
                             </button>
-                            <button className="rounded-md cursor-pointer">
-                                <MoreVertical size={18} />
-                            </button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="cursor-pointer"><MoreVertical size={18} /></DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </div>
                 ))}
