@@ -1,4 +1,5 @@
 import Hero from '@/components/Hero/Hero';
+import Partner from '@/components/Partner/Partner';
 import WorkProcess from '@/components/WorkProcess/WorkProcess';
 import React from 'react';
 
@@ -7,6 +8,7 @@ const page = () => {
         <div>
             <Hero />
             <WorkProcess />
+            <Partner />
         </div>
     );
 };
