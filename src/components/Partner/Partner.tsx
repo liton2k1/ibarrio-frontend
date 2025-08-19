@@ -24,7 +24,7 @@ const Partner = () => {
                 <Container className="mt-20">
                     <Marquee gradient={false} speed={50} pauseOnHover>
                         {logos.map((logo, index) => (
-                            <div key={index} className="mx-10 flex items-center border-t border-b py-3">
+                            <div key={index} className="mx-10 flex items-center">
                                 <Image
                                     src={logo}
                                     alt={`partner-logo-${index}`}
