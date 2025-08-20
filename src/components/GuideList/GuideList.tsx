@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Container from "../Container/Container";
 import Image from "next/image";
-import { MoreVertical, Share2, ArrowRight } from "lucide-react";
+import { MoreVertical, Share2, ArrowRight, Copy, Facebook, Twitter, Linkedin } from "lucide-react";
 import img from "../../../public/images/img (4).png";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
@@ -11,15 +11,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
 import FileUploader from "../FileUploader/FileUploader";
+import toast from "react-hot-toast";
 
 const guides = [
-    { id: 1, title: "XTZ Home Direction", description: "Follow this simple visual route to reach the correct door with no confusion.", image: img },
-    { id: 2, title: "XTZ Home Direction", description: "Follow this simple visual route to reach the correct door with no confusion.", image: img },
-    { id: 3, title: "XTZ Home Direction", description: "Follow this simple visual route to reach the correct door with no confusion.", image: img },
+    { id: 1, title: "XTZ Home Direction", description: "Follow this simple visual route to reach the correct door with no confusion.", image: img, liveUrl: "https://www.google.com/maps" },
+    { id: 2, title: "XTZ Home Direction", description: "Follow this simple visual route to reach the correct door with no confusion.", image: img, liveUrl: "https://www.google.com/maps" },
+    { id: 3, title: "XTZ Home Direction", description: "Follow this simple visual route to reach the correct door with no confusion.", image: img, liveUrl: "https://www.google.com/maps" },
 ];
 
 const GuideList = () => {
-    const [openModalId, setOpenModalId] = useState<number | null>(null);
+    const [openEditModalId, setOpenEditModalId] = useState<number | null>(null);
+    const [openShareModalId, setOpenShareModalId] = useState<number | null>(null);
+
+    const handleCopy = (url: string) => {
+        navigator.clipboard.writeText(url);
+        toast.success('Link copied to clipboard!')
+    };
 
     return (
         <Container className="mt-20">
@@ -42,7 +49,12 @@ const GuideList = () => {
                             <button className="border border-gray-300 px-4 py-2 rounded-md text-sm font-medium cursor-pointer">
                                 View Guide
                             </button>
-                            <button className="bg-[#9E58CD] text-white px-4 py-2 rounded-md text-sm font-medium flex items-center gap-1 cursor-pointer">
+
+                            {/* Share Button */}
+                            <button
+                                className="bg-[#9E58CD] text-white px-4 py-2 rounded-md text-sm font-medium flex items-center gap-1 cursor-pointer"
+                                onClick={() => setOpenShareModalId(guide.id)}
+                            >
                                 Share <Share2 size={16} />
                             </button>
 
@@ -52,36 +64,69 @@ const GuideList = () => {
                                     <MoreVertical size={18} />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
-                                    <DropdownMenuItem onClick={() => setOpenModalId(guide.id)} className="cursor-pointer">Edit</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setOpenEditModalId(guide.id)} className="cursor-pointer">Edit</DropdownMenuItem>
                                     <DropdownMenuItem className="cursor-pointer">Delete</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
 
                         {/* Edit Modal */}
-                        {openModalId === guide.id && (
-                            <Dialog open={true} onOpenChange={(open) => !open && setOpenModalId(null)}>
+                        {openEditModalId === guide.id && (
+                            <Dialog open={true} onOpenChange={(open) => !open && setOpenEditModalId(null)}>
                                 <DialogContent className="sm:max-w-[600px]">
                                     <DialogHeader>
                                         <DialogTitle>Update Your Guide</DialogTitle>
-                                        <DialogDescription>
-                                            Guide Details
-                                        </DialogDescription>
+                                        <DialogDescription>Guide Details</DialogDescription>
                                     </DialogHeader>
                                     <div className="grid gap-4">
-                                        <div className="grid gap-3">
-                                            <Input id="homeDirection" name="homeDirection" placeholder="XYZ Home direction" />
-                                        </div>
-                                        <div className="grid gap-3">
-                                            <Textarea id="description" name="description" placeholder="Description" />
-                                        </div>
+                                        <Input id="homeDirection" name="homeDirection" placeholder="XYZ Home direction" />
+                                        <Textarea id="description" name="description" placeholder="Description" />
                                     </div>
                                     <FileUploader />
                                     <DialogFooter>
                                         <DialogClose asChild>
-                                            <Button variant="outline" onClick={() => setOpenModalId(null)}>Cancel</Button>
+                                            <Button variant="outline" onClick={() => setOpenEditModalId(null)}>Cancel</Button>
                                         </DialogClose>
                                         <Button className="bg-[#9E58CD] hover:bg-[#9E58CD]" type="submit">Update</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        )}
+
+                        {/* Share Modal */}
+                        {openShareModalId === guide.id && (
+                            <Dialog open={true} onOpenChange={(open) => !open && setOpenShareModalId(null)}>
+                                <DialogContent className="sm:max-w-[400px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Share This Guide</DialogTitle>
+                                        <DialogDescription>Share the guide link with others.</DialogDescription>
+                                    </DialogHeader>
+
+                                    <div className="flex flex-col gap-4 mt-4">
+                                        {/* Social Icons */}
+                                        <div className="flex gap-4 justify-center">
+                                            <a href={`https://www.facebook.com/sharer/sharer.php?u=${guide.liveUrl}`} target="_blank" rel="noopener noreferrer">
+                                                <Facebook className="w-8 h-8 text-blue-600 cursor-pointer" />
+                                            </a>
+                                            <a href={`https://twitter.com/intent/tweet?url=${guide.liveUrl}`} target="_blank" rel="noopener noreferrer">
+                                                <Twitter className="w-8 h-8 text-blue-400 cursor-pointer" />
+                                            </a>
+                                            <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${guide.liveUrl}`} target="_blank" rel="noopener noreferrer">
+                                                <Linkedin className="w-8 h-8 text-blue-700 cursor-pointer" />
+                                            </a>
+                                        </div>
+
+                                        {/* Copy Link */}
+                                        <div className="flex gap-2">
+                                            <Input value={guide.liveUrl} readOnly />
+                                            <Button onClick={() => handleCopy(guide.liveUrl)}><Copy size={16} /></Button>
+                                        </div>
+                                    </div>
+
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button variant="outline">Close</Button>
+                                        </DialogClose>
                                     </DialogFooter>
                                 </DialogContent>
                             </Dialog>
