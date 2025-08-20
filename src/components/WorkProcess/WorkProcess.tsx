@@ -34,7 +34,7 @@ const WorkProcess = () => {
             {steps.map((step, index) => (
                 <div
                     key={index}
-                    className="bg-white shadow-md rounded-md p-5 grid grid-cols-1 md:grid-cols-2 gap-10 items-center mt-10"
+                    className="border border-gray-300 rounded-md p-5 grid grid-cols-1 md:grid-cols-2 gap-10 items-center mt-10"
                 >
                     {/* Text Section */}
                     <div className="flex items-center gap-5 order-2 md:order-1">

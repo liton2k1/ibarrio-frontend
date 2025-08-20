@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import FileUploader from "@/components/FileUploader/FileUploader";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash } from "lucide-react";
+import { Navigation, Trash } from "lucide-react";
 
 interface Step {
     id: number;
@@ -24,7 +24,6 @@ const CreateGuide = () => {
     };
 
     const handleRemoveStep = (id: number) => {
-        // Prevent removing the last remaining step
         if (steps.length === 1) return;
         setSteps(steps.filter((step) => step.id !== id));
     };
@@ -35,6 +34,26 @@ const CreateGuide = () => {
                 step.id === id ? { ...step, instruction: value } : step
             )
         );
+    };
+
+    // Handle Live Location Button
+    const handleLiveLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    // Redirect to Google Maps with user location
+                    const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                    window.open(googleMapsUrl, "_blank");
+                },
+                (error) => {
+                    alert("Unable to retrieve your location. Please enable location access.");
+                    console.error(error);
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
     };
 
     return (
@@ -104,10 +123,18 @@ const CreateGuide = () => {
                     >
                         + Add Steps
                     </Button>
-                    <Button className="w-full bg-[#9E58CD] hover:bg-[#9E58CD] text-white">
-                        Publish Guide
+                    <Button
+                        onClick={handleLiveLocation}
+                        className="w-full bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
+                    >
+                        <Navigation /> Live Location
                     </Button>
                 </div>
+            </div>
+            <div className="mt-10">
+                <Button className="w-full bg-[#9E58CD] hover:bg-[#9E58CD] text-white">
+                    Push Guide
+                </Button>
             </div>
         </div>
     );
