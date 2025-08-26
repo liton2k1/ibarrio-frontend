@@ -1,24 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
 import Container from "../Container/Container";
 import Image from "next/image";
 import {
-    MoreVertical,
     Share2,
-    ArrowRight,
     Copy,
     Trash,
     Navigation,
 } from "lucide-react";
 import img from "../../../public/images/img (4).png";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import {
     Dialog,
     DialogContent,
@@ -112,14 +103,6 @@ const GuideList = () => {
         );
     };
 
-    const handleOpenEdit = (guide: any) => {
-        setEditTitle(guide.title);
-        setEditDescription(guide.description);
-        setEditLink(guide.liveUrl);
-        setSteps([{ id: 1, instruction: "" }]);
-        setOpenEditModalId(guide.id);
-    };
-
     return (
         <Container className="mt-20">
             <h1 className="lg:text-4xl text-3xl font-bold mb-8">Guide List</h1>
@@ -156,21 +139,6 @@ const GuideList = () => {
                             >
                                 Share <Share2 size={16} />
                             </button>
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger className="cursor-pointer">
-                                    <MoreVertical size={18} />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem
-                                        onClick={() => handleOpenEdit(guide)}
-                                        className="cursor-pointer"
-                                    >
-                                        Edit
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="cursor-pointer">Delete</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
                         </div>
 
                         {/* Edit Modal */}
@@ -263,61 +231,90 @@ const GuideList = () => {
                                 open={true}
                                 onOpenChange={(open) => !open && setOpenShareModalId(null)}
                             >
-                                <DialogContent className="sm:max-w-[400px]">
+                                <DialogContent className="sm:max-w-[500px]">
                                     <DialogHeader>
                                         <DialogTitle>Share This Guide</DialogTitle>
-                                        <DialogDescription>Share the guide link with others.</DialogDescription>
+                                        <DialogDescription>Share the guide with private or public access.</DialogDescription>
                                     </DialogHeader>
 
-                                    <div className="flex flex-col gap-4 mt-4">
-                                        <div className="flex gap-4 justify-center">
-                                            {/* Facebook */}
-                                            <a
-                                                href={`https://www.facebook.com/sharer/sharer.php?u=${guide.liveUrl}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Image src={facebook} alt="" className="w-8 h-8 cursor-pointer" />
-                                            </a>
+                                    {(() => {
+                                        const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+                                        const privateUrl = `${baseUrl}/private-guide/${guide.id}`;
+                                        const publicUrl = `${baseUrl}/public-guide/${guide.id}`;
 
-                                            {/* WhatsApp */}
-                                            <a
-                                                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(guide.liveUrl)}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Image src={whatsApp} alt="" className="w-8 h-8 cursor-pointer" />
-                                            </a>
+                                        return (
+                                            <div className="flex flex-col gap-6 mt-4">
+                                                {/* Private Link */}
+                                                <div className="space-y-2">
+                                                    <h3 className="font-semibold text-gray-700">🔒 Private Link</h3>
+                                                    <div className="flex gap-2">
+                                                        <Input value={privateUrl} readOnly />
+                                                        <Button
+                                                            className="bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
+                                                            onClick={() => handleCopy(privateUrl)}
+                                                        >
+                                                            <Copy size={16} />
+                                                        </Button>
+                                                    </div>
+                                                </div>
 
-                                            {/* Messenger */}
-                                            <a
-                                                href={`fb-messenger://share/?link=${encodeURIComponent(guide.liveUrl)}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Image src={messenger} alt="" className="w-8 h-8 cursor-pointer" />
-                                            </a>
+                                                {/* Public Link */}
+                                                <div className="space-y-2">
+                                                    {/* Social Share Buttons (use Public link) */}
+                                                    <div className="flex gap-4 justify-center mt-3">
+                                                        {/* Facebook */}
+                                                        <a
+                                                            href={`https://www.facebook.com/sharer/sharer.php?u=${publicUrl}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            <Image src={facebook} alt="fb" className="w-8 h-8 cursor-pointer" />
+                                                        </a>
 
-                                            {/* Email */}
-                                            <a
-                                                href={`mailto:?subject=${encodeURIComponent(guide.title)}&body=${encodeURIComponent(guide.liveUrl)}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Image src={email} alt="" className="w-8 h-8 cursor-pointer" />
-                                            </a>
-                                        </div>
+                                                        {/* WhatsApp */}
+                                                        <a
+                                                            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(publicUrl)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            <Image src={whatsApp} alt="wa" className="w-8 h-8 cursor-pointer" />
+                                                        </a>
 
+                                                        {/* Messenger */}
+                                                        <a
+                                                            href={`fb-messenger://share/?link=${encodeURIComponent(publicUrl)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            <Image src={messenger} alt="messenger" className="w-8 h-8 cursor-pointer" />
+                                                        </a>
 
-                                        <div className="flex gap-2">
-                                            <Input value={guide.liveUrl} readOnly />
-                                            <Button className="bg-[#9E58CD] hover:bg-[#9E58CD] text-white" onClick={() => handleCopy(guide.liveUrl)}>
-                                                <Copy size={16} />
-                                            </Button>
-                                        </div>
-                                    </div>
+                                                        {/* Email */}
+                                                        <a
+                                                            href={`mailto:?subject=${encodeURIComponent(guide.title)}&body=${encodeURIComponent(publicUrl)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            <Image src={email} alt="email" className="w-8 h-8 cursor-pointer" />
+                                                        </a>
+                                                    </div>
+                                                    <h3 className="font-semibold text-gray-700">🌍 Public Link</h3>
+                                                    <div className="flex gap-2">
+                                                        <Input value={publicUrl} readOnly />
+                                                        <Button
+                                                            className="bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
+                                                            onClick={() => handleCopy(publicUrl)}
+                                                        >
+                                                            <Copy size={16} />
+                                                        </Button>
+                                                    </div>
 
-                                    <DialogFooter>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
+
+                                    <DialogFooter className="mt-4">
                                         <DialogClose asChild>
                                             <Button variant="outline">Close</Button>
                                         </DialogClose>
@@ -327,12 +324,6 @@ const GuideList = () => {
                         )}
                     </div>
                 ))}
-            </div>
-
-            <div className="mt-10 text-center">
-                <button className="border border-[#9E58CD] text-[#9E58CD] px-5 py-2 rounded-md font-medium flex items-center gap-2 hover:bg-[#9E58CD] hover:text-white transition cursor-pointer">
-                    View more <ArrowRight size={16} />
-                </button>
             </div>
         </Container>
     );

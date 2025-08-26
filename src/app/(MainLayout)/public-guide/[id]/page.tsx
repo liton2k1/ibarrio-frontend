@@ -3,7 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import Container from "@/components/Container/Container";
-import { ArrowRight } from "lucide-react";
 
 const guides = [
     {
@@ -85,11 +84,11 @@ const GuidePage = ({ params }: PageProps) => {
                 </a> */}
             </div>
 
-            <div className="flex justify-end mt-10">
+            {/* <div className="flex justify-end mt-10">
                 <button className="bg-[#9E58CD] px-6 py-2 rounded-md text-white font-semibold flex items-center gap-2 cursor-pointer">
                     See All <ArrowRight />
                 </button>
-            </div>
+            </div> */}
         </Container>
     );
 };
