@@ -15,14 +15,19 @@ import {
     DialogTitle,
     DialogClose,
 } from "@/components/ui/dialog";
+import facebook from "../../../../public/logo/facebook.png";
+import messenger from "../../../../public/logo/messenger.png";
+import whatsApp from "../../../../public/logo/social.png";
+import email from "../../../../public/logo/mail.png";
+import Image from "next/image";
 
 interface Step {
-    id: number;
     title: string;
-    url: string;
+    liveUrl: string;
     description: string;
     photo?: string;
     instruction: string;
+    caption: string;
 }
 
 const CreateGuide = () => {
@@ -32,11 +37,11 @@ const CreateGuide = () => {
 
     const [steps, setSteps] = useState<Step[]>([
         {
-            id: 1,
-            instruction: "",
             title: "",
-            url: "",
+            liveUrl: "",
             description: "",
+            instruction: "",
+            caption: "",
         },
     ]);
 
@@ -46,24 +51,24 @@ const CreateGuide = () => {
         setSteps([
             ...steps,
             {
-                id: steps.length + 1,
-                instruction: "",
                 title: "",
-                url: "",
+                liveUrl: "",
                 description: "",
+                instruction: "",
+                caption: "",
             },
         ]);
     };
 
-    const handleRemoveStep = (id: number) => {
+    const handleRemoveStep = (index: number) => {
         if (steps.length === 1) return;
-        setSteps(steps.filter((step) => step.id !== id));
+        setSteps(steps.filter((_, i) => i !== index));
     };
 
-    const handleInstructionChange = (id: number, value: string) => {
+    const handleInstructionChange = (index: number, value: string) => {
         setSteps(
-            steps.map((step) =>
-                step.id === id ? { ...step, instruction: value } : step
+            steps.map((step, i) =>
+                i === index ? { ...step, instruction: value } : step
             )
         );
     };
@@ -109,44 +114,53 @@ const CreateGuide = () => {
     const publicUrl = `${baseUrl}/public-guide/123`;
 
     return (
-        <div className="md:w-2xl w-full mx-auto lg:px-0 px-5 my-20">
+        <div className="sm:max-w-[800px] mx-auto lg:px-0 px-5 my-20">
             <h1 className="text-3xl font-bold text-center mb-10">Create Guide</h1>
 
             <div className="border rounded-md p-5 space-y-5">
                 <h2 className="text-xl font-semibold">Create your Delivery Guide</h2>
 
                 <div className="space-y-4">
-                    <Input
-                        placeholder="Enter Title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                    />
-                    <Input
-                        placeholder="Enter Live Link"
-                        value={link}
-                        onChange={(e) => setLink(e.target.value)}
-                    />
-                    <Textarea
-                        placeholder="Say something about this direction"
-                        className="h-32"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                    />
+                    <div>
+                        <Label className="mb-2">Guide Title</Label>
+                        <Input
+                            placeholder="Guide Title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Label className="mb-2">Live Link</Label>
+                        <Input
+                            placeholder="Live Link"
+                            value={link}
+                            onChange={(e) => setLink(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Label className="mb-2">Details</Label>
+                        <Textarea
+                            placeholder="Details"
+                            className="h-32"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </div>
                 </div>
 
                 {/* Steps Form */}
-                {steps.map((step) => (
+                {steps.map((step, index) => (
                     <div
-                        key={step.id}
+                        key={index}
                         className="mt-5 space-y-4 border rounded-md p-4 relative"
                     >
                         <div className="flex justify-between items-center">
-                            <h3 className="font-semibold">Step {step.id}</h3>
+                            <h3 className="font-semibold">Step {index + 1}</h3>
                             <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => handleRemoveStep(step.id)}
+                                onClick={() => handleRemoveStep(index)}
                                 disabled={steps.length === 1}
                             >
                                 <Trash className="h-5 w-5 text-red-500" />
@@ -156,12 +170,26 @@ const CreateGuide = () => {
                         <FileUploader />
 
                         <div>
+                            <Label className="mb-2">Caption</Label>
+                            <Input
+                                placeholder="Add Caption"
+                                value={step.caption}
+                                onChange={(e) =>
+                                    setSteps(
+                                        steps.map((s, i) =>
+                                            i === index ? { ...s, caption: e.target.value } : s
+                                        )
+                                    )
+                                }
+                            />
+                        </div>
+                        <div>
                             <Label className="mb-2">Instructions</Label>
                             <Input
-                                placeholder="Enter through the main gate"
+                                placeholder="Add Instruction"
                                 value={step.instruction}
                                 onChange={(e) =>
-                                    handleInstructionChange(step.id, e.target.value)
+                                    handleInstructionChange(index, e.target.value)
                                 }
                             />
                         </div>
@@ -203,6 +231,47 @@ const CreateGuide = () => {
                     </DialogHeader>
 
                     <div className="flex flex-col gap-6 mt-4">
+                        <div className="space-y-2">
+                            {/* Social Share Buttons (use Public link) */}
+                            <div className="flex gap-4 justify-center mt-3">
+                                {/* Facebook */}
+                                <a
+                                    href={`https://www.facebook.com/sharer/sharer.php?u=${publicUrl}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Image src={facebook} alt="fb" className="w-8 h-8 cursor-pointer" />
+                                </a>
+
+                                {/* WhatsApp */}
+                                <a
+                                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(publicUrl)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Image src={whatsApp} alt="wa" className="w-8 h-8 cursor-pointer" />
+                                </a>
+
+                                {/* Messenger */}
+                                <a
+                                    href={`fb-messenger://share/?link=${encodeURIComponent(publicUrl)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Image src={messenger} alt="messenger" className="w-8 h-8 cursor-pointer" />
+                                </a>
+
+                                {/* Email */}
+                                <a
+                                    href={`mailto:?subject=${encodeURIComponent(publicUrl)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Image src={email} alt="email" className="w-8 h-8 cursor-pointer" />
+                                </a>
+                            </div>
+                        </div>
+
                         {/* Private Link */}
                         <div className="space-y-2">
                             <h3 className="font-semibold text-gray-700">🔒 Private Link</h3>

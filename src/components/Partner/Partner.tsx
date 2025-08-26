@@ -17,9 +17,9 @@ const Partner = () => {
 
     return (
         <div className="mt-20">
-            <h1 className="lg:text-4xl text-3xl font-bold text-center">
+            {/* <h1 className="lg:text-4xl text-3xl font-bold text-center">
                 Works everywhere you get deliveries
-            </h1>
+            </h1> */}
             <div className="bg-gradient-to-t from-[#9E58CD6B] to-[#F9F9FF00] py-10">
                 <Container className="mt-20">
                     <Marquee gradient={false} speed={50} pauseOnHover>

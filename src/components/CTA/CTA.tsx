@@ -4,7 +4,7 @@ import React from 'react';
 
 const CTA = () => {
     return (
-        <div className='bg-[#d7bdea] py-20 mt-20'>
+        <div className='bg-[#DEACFF] py-20 mt-20'>
             <div className='lg:w-5xl mx-auto'>
                 <h1 className='lg:text-6xl text-3xl text-center capitalize leading-tight'>Ready to make your doorstep easier
                     to find?</h1>

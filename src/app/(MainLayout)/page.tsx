@@ -10,11 +10,11 @@ const page = () => {
     return (
         <div>
             <Hero />
-            <WorkProcess />
             <Partner />
+            <WorkProcess />
             {/* <GuideList /> */}
             <CTA />
-            <FAQ/>
+            <FAQ />
         </div>
     );
 };
