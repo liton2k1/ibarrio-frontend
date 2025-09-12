@@ -6,108 +6,59 @@ import Image from "next/image";
 import Container from "@/components/Container/Container";
 import { Edit } from "lucide-react";
 import UpdateGuideModal from "@/components/UpdateGuideModal/UpdateGuideModal";
+import { Step, useGetGuideByIdQuery, useUpdateGuideMutation } from "@/redux/guideApi";
+import toast from "react-hot-toast";
+import { useParams } from "next/navigation";
 
-interface Step {
-    instruction: string;
-    caption: string;
-    photo?: string;
-    title?: string;
-    liveUrl?: string;
-    description?: string;
-}
-
-interface Guide {
-    id?: number;
-    title: string;
-    liveUrl: string;
-    description: string;
-    steps: Step[];
-}
-
-const guides: Guide[] = [
-    {
-        id: 1,
-        title: "XTZ Home Direction",
-        liveUrl: "https://maps.app.goo.gl/BYU23RFg4QJRTBQr5",
-        description:
-            "Follow this simple visual route to reach the correct door with no confusion. This step-by-step guide ensures you’ll find the way easily.",
-        steps: [
-            {
-                caption: "Caption",
-                instruction: "Follow this simple visual route to reach the correct door with no confusion. This step-by-step guide ensures you’ll find the way easily.",
-                photo: "/images/img (1).jpg",
-            },
-            {
-                caption: "Caption",
-                instruction: "Follow this simple visual route to reach the correct door with no confusion. This step-by-step guide ensures you’ll find the way easily.",
-                photo: "/images/img (2).jpg",
-            },
-            {
-                caption: "Caption",
-                instruction: "Follow this simple visual route to reach the correct door with no confusion. This step-by-step guide ensures you’ll find the way easily.",
-                photo: "/images/img (3).jpg",
-            },
-        ],
-    },
-    {
-        id: 2,
-        title: "Office Path",
-        liveUrl: "https://maps.app.goo.gl/BYU23RFg4QJRTBQr5",
-        description: "Use the side entrance and follow the path to the second floor.",
-        steps: [
-            {
-                caption: "Caption",
-                instruction: "Enter the side gate",
-                photo: "/images/img (1).jpg",
-            },
-            {
-                caption: "Caption",
-                instruction: "Take the stairs to 1st floor",
-                photo: "/images/img (2).jpg",
-            },
-        ],
-    },
-];
-
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-const GuidePage = ({ params }: PageProps) => {
-    const resolvedParams = React.use(params);
-    const guideId = Number(resolvedParams.id);
-    const guide = guides.find((g) => g.id === guideId);
+const PrivateGuide = () => {
+    const { id } = useParams() as { id: string };
 
     const [openEdit, setOpenEdit] = useState(false);
 
-    const handleUpdateGuide = (updatedGuide: any) => {
-        console.log("Updated Guide:", updatedGuide);
-        // TODO: Call API to save updates
+    const { data: guide, isLoading, isError } = useGetGuideByIdQuery(id);
+    const [updateGuide, { isLoading: isUpdating }] = useUpdateGuideMutation();
+
+    if (isLoading) return <Container>Loading...</Container>;
+    if (isError || !guide) return <Container>Guide not found!</Container>;
+
+    const handleUpdateGuide = async (updatedGuide: any) => {
+        try {
+            await updateGuide({
+                id,
+                data: {
+                    title: updatedGuide.title,
+                    description: updatedGuide.description,
+                    url: updatedGuide.liveUrl,
+                    steps: updatedGuide.steps,
+                },
+            }).unwrap();
+
+            toast.success("Guide updated successfully!");
+        } catch (error: any) {
+            console.error("Failed to update guide:", error);
+            toast.error(error?.data?.message || "Failed to update guide");
+        }
     };
 
-    if (!guide) {
-        return (
-            <Container className="mt-20">
-                <p className="text-center text-red-500 font-medium">Guide not found!</p>
-            </Container>
-        );
-    }
 
     return (
         <Container className="mt-20">
             {/* Title + Description */}
             <div className="text-center max-w-3xl mx-auto mb-14">
-                <h1 className="lg:text-5xl text-3xl font-bold mb-5">{guide.title}</h1>
-                <p className="text-gray-600 text-lg">{guide.description}</p>
+                <h1 className="lg:text-5xl text-3xl font-bold mb-5">
+                    {guide?.data?.title}
+                </h1>
+                <p className="text-gray-600 text-lg">{guide?.data?.description}</p>
             </div>
 
             {/* Edit Button with Modal */}
             <div className="flex justify-end">
                 <button
                     onClick={() => setOpenEdit(true)}
-                    className="bg-[#9E58CD] px-6 py-3 rounded-md text-white font-semibold flex items-center gap-2 mt-5 cursor-pointer"
+                    disabled={isUpdating}
+                    className="bg-[#9E58CD] px-6 py-3 rounded-md text-white font-semibold flex items-center gap-2 mt-5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Edit Guide <Edit />
+                    {isUpdating ? "Updating..." : "Edit Guide"} <Edit />
                 </button>
             </div>
 
@@ -115,20 +66,16 @@ const GuidePage = ({ params }: PageProps) => {
                 open={openEdit}
                 onOpenChange={setOpenEdit}
                 guide={{
-                    ...guide,
-                    steps: guide.steps.map(s => ({
-                        title: guide.title,
-                        liveUrl: guide.liveUrl,
-                        description: guide.description,
-                        ...s
-                    }))
+                    title: guide?.data?.title,
+                    liveUrl: guide?.data?.url,
+                    description: guide?.data?.description,
+                    steps: guide?.data?.steps || [],
                 }}
                 onUpdate={handleUpdateGuide}
             />
 
-
             {/* Steps */}
-            {guide.steps.map((step, index) => (
+            {guide?.data?.steps?.map((step: Step, index: number) => (
                 <div
                     key={index}
                     className="border border-gray-300 rounded-md p-5 grid grid-cols-1 md:grid-cols-2 gap-10 items-center mt-5"
@@ -157,7 +104,7 @@ const GuidePage = ({ params }: PageProps) => {
                 <h2 className="text-3xl font-bold mb-5">Live Direction</h2>
                 <div className="w-full h-[400px] rounded-md border border-gray-300 overflow-hidden">
                     <a
-                        href={guide.liveUrl}
+                        href={guide?.data?.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block w-full h-full"
@@ -178,4 +125,4 @@ const GuidePage = ({ params }: PageProps) => {
     );
 };
 
-export default GuidePage;
+export default PrivateGuide;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -20,44 +21,31 @@ import messenger from "../../../../public/logo/messenger.png";
 import whatsApp from "../../../../public/logo/social.png";
 import email from "../../../../public/logo/mail.png";
 import Image from "next/image";
+import { useCreateGuideMutation } from "@/redux/guideApi";
+import toast from "react-hot-toast";
 
 interface Step {
-    title: string;
-    liveUrl: string;
-    description: string;
-    photo?: string;
-    instruction: string;
     caption: string;
+    instruction: string;
+    photo?: File | null;
 }
 
 const CreateGuide = () => {
+    const [createGuide, { isLoading }] = useCreateGuideMutation();
+
     const [title, setTitle] = useState<string>("");
     const [link, setLink] = useState<string>("");
     const [description, setDescription] = useState<string>("");
 
     const [steps, setSteps] = useState<Step[]>([
-        {
-            title: "",
-            liveUrl: "",
-            description: "",
-            instruction: "",
-            caption: "",
-        },
+        { caption: "", instruction: "", photo: null },
     ]);
 
     const [openShareModal, setOpenShareModal] = useState(false);
+    const [guideId, setGuideId] = useState<string | null>(null);
 
     const handleAddStep = () => {
-        setSteps([
-            ...steps,
-            {
-                title: "",
-                liveUrl: "",
-                description: "",
-                instruction: "",
-                caption: "",
-            },
-        ]);
+        setSteps([...steps, { caption: "", instruction: "", photo: null }]);
     };
 
     const handleRemoveStep = (index: number) => {
@@ -65,11 +53,9 @@ const CreateGuide = () => {
         setSteps(steps.filter((_, i) => i !== index));
     };
 
-    const handleInstructionChange = (index: number, value: string) => {
+    const handleStepChange = (index: number, field: string, value: any) => {
         setSteps(
-            steps.map((step, i) =>
-                i === index ? { ...step, instruction: value } : step
-            )
+            steps.map((step, i) => (i === index ? { ...step, [field]: value } : step))
         );
     };
 
@@ -79,7 +65,6 @@ const CreateGuide = () => {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    // Redirect to Google Maps with user location
                     const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
                     window.open(googleMapsUrl, "_blank");
                 },
@@ -97,21 +82,55 @@ const CreateGuide = () => {
     const handleCopy = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
-            alert("Copied to clipboard!");
+            toast.success("Copied to clipboard!");
         } catch (err) {
             console.error("Failed to copy", err);
         }
     };
 
-    // Handle Push Guide (open modal)
-    const handlePushGuide = () => {
-        setOpenShareModal(true);
+    // Handle Submit Guide (API)
+    // Handle Submit Guide (API)
+    const handleSubmit = async () => {
+        const formData = new FormData();
+        formData.append(
+            "data",
+            JSON.stringify({
+                title,
+                url: link,
+                description,
+                steps: steps.map((step) => ({
+                    caption: step.caption,
+                    instruction: step.instruction,
+                })),
+            })
+        );
+
+        steps.forEach((step) => {
+            if (step.photo) formData.append("file", step.photo);
+        });
+
+        try {
+            const res = await createGuide(formData).unwrap();
+            console.log("Guide created:", res);
+
+            // ✅ Save the correct guideId
+            setGuideId(res?.data?._id);
+
+            toast.success("Guide created successfully!");
+            setOpenShareModal(true);
+        } catch (err: any) {
+            console.error(err);
+            toast.error(err?.data?.message || "Failed to create guide");
+        }
     };
 
+
+    // Build Share Links
     const baseUrl =
         typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-    const privateUrl = `${baseUrl}/guide-info/123`; // Replace 123 with new guide ID after save
-    const publicUrl = `${baseUrl}/public-guide/123`;
+
+    const privateUrl = guideId ? `${baseUrl}/private-guide/${guideId}` : "";
+    const publicUrl = guideId ? `${baseUrl}/public-guide/${guideId}` : "";
 
     return (
         <div className="sm:max-w-[800px] mx-auto lg:px-0 px-5 my-20">
@@ -167,7 +186,9 @@ const CreateGuide = () => {
                             </Button>
                         </div>
 
-                        <FileUploader />
+                        <FileUploader
+                            onFileSelect={(file) => handleStepChange(index, "photo", file)}
+                        />
 
                         <div>
                             <Label className="mb-2">Caption</Label>
@@ -175,28 +196,25 @@ const CreateGuide = () => {
                                 placeholder="Add Caption"
                                 value={step.caption}
                                 onChange={(e) =>
-                                    setSteps(
-                                        steps.map((s, i) =>
-                                            i === index ? { ...s, caption: e.target.value } : s
-                                        )
-                                    )
+                                    handleStepChange(index, "caption", e.target.value)
                                 }
                             />
                         </div>
+
                         <div>
                             <Label className="mb-2">Instructions</Label>
                             <Input
                                 placeholder="Add Instruction"
                                 value={step.instruction}
                                 onChange={(e) =>
-                                    handleInstructionChange(index, e.target.value)
+                                    handleStepChange(index, "instruction", e.target.value)
                                 }
                             />
                         </div>
                     </div>
                 ))}
 
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5 mt-5">
                     <Button
                         onClick={handleAddStep}
                         className="w-full bg-black text-white"
@@ -211,10 +229,12 @@ const CreateGuide = () => {
                     </Button>
                 </div>
             </div>
+
             <div className="mt-10">
                 <Button
+                    onClick={handleSubmit}
                     className="w-full bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
-                    onClick={handlePushGuide}
+                    disabled={isLoading}
                 >
                     Push Guide
                 </Button>
@@ -230,11 +250,10 @@ const CreateGuide = () => {
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="flex flex-col gap-6 mt-4">
-                        <div className="space-y-2">
-                            {/* Social Share Buttons (use Public link) */}
+                    {guideId ? (
+                        <div className="flex flex-col gap-6 mt-4">
+                            {/* Social Share */}
                             <div className="flex gap-4 justify-center mt-3">
-                                {/* Facebook */}
                                 <a
                                     href={`https://www.facebook.com/sharer/sharer.php?u=${publicUrl}`}
                                     target="_blank"
@@ -242,17 +261,15 @@ const CreateGuide = () => {
                                 >
                                     <Image src={facebook} alt="fb" className="w-8 h-8 cursor-pointer" />
                                 </a>
-
-                                {/* WhatsApp */}
                                 <a
-                                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(publicUrl)}`}
+                                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                                        publicUrl
+                                    )}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
                                     <Image src={whatsApp} alt="wa" className="w-8 h-8 cursor-pointer" />
                                 </a>
-
-                                {/* Messenger */}
                                 <a
                                     href={`fb-messenger://share/?link=${encodeURIComponent(publicUrl)}`}
                                     target="_blank"
@@ -260,46 +277,50 @@ const CreateGuide = () => {
                                 >
                                     <Image src={messenger} alt="messenger" className="w-8 h-8 cursor-pointer" />
                                 </a>
-
-                                {/* Email */}
                                 <a
-                                    href={`mailto:?subject=${encodeURIComponent(publicUrl)}`}
+                                    href={`mailto:?subject=Check this guide&body=${encodeURIComponent(
+                                        publicUrl
+                                    )}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
                                     <Image src={email} alt="email" className="w-8 h-8 cursor-pointer" />
                                 </a>
                             </div>
-                        </div>
 
-                        {/* Private Link */}
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-gray-700">🔒 Private Link</h3>
-                            <div className="flex gap-2">
-                                <Input value={privateUrl} readOnly />
-                                <Button
-                                    className="bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
-                                    onClick={() => handleCopy(privateUrl)}
-                                >
-                                    <Copy size={16} />
-                                </Button>
+                            {/* Private Link */}
+                            <div className="space-y-2">
+                                <h3 className="font-semibold text-gray-700">🔒 Private Link</h3>
+                                <div className="flex gap-2">
+                                    <Input value={privateUrl} readOnly />
+                                    <Button
+                                        className="bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
+                                        onClick={() => handleCopy(privateUrl)}
+                                    >
+                                        <Copy size={16} />
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Public Link */}
+                            <div className="space-y-2">
+                                <h3 className="font-semibold text-gray-700">🌍 Public Link</h3>
+                                <div className="flex gap-2">
+                                    <Input value={publicUrl} readOnly />
+                                    <Button
+                                        className="bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
+                                        onClick={() => handleCopy(publicUrl)}
+                                    >
+                                        <Copy size={16} />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
-
-                        {/* Public Link */}
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-gray-700">🌍 Public Link</h3>
-                            <div className="flex gap-2">
-                                <Input value={publicUrl} readOnly />
-                                <Button
-                                    className="bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
-                                    onClick={() => handleCopy(publicUrl)}
-                                >
-                                    <Copy size={16} />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
+                    ) : (
+                        <p className="text-center text-gray-500">
+                            Please create a guide first to generate share links.
+                        </p>
+                    )}
 
                     <DialogFooter className="mt-4">
                         <DialogClose asChild>

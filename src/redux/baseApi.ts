@@ -5,6 +5,6 @@ export const baseApi = createApi({
         baseUrl: process.env.NEXT_PUBLIC_API_URL,
     }),
 
-    tagTypes: ['Guide', 'Post', 'Auth'], // add tags for cache invalidation
-    endpoints: () => ({}), // initial empty endpoints to be injected later
+    tagTypes: ['Guide'],
+    endpoints: () => ({}),
 });

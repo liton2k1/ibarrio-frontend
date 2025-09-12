@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/FileUploader/FileUploader";
-import { Trash } from "lucide-react";
 
 interface Step {
     title: string;
@@ -59,16 +58,20 @@ const UpdateGuideModal = ({
         );
     };
 
-    const handleRemoveStep = (index: number) => {
-        if (steps.length === 1) return;
-        setSteps(steps.filter((_, i) => i !== index));
-    };
-
-    const handleAddStep = () => {
-        setSteps([
-            ...steps,
-            { title: "", liveUrl: "", description: "", instruction: "", caption: "" },
-        ]);
+    // New function to handle photo updates
+    const handlePhotoChange = (index: number, file: File | null) => {
+        if (file) {
+            // Create a preview URL for the new file
+            const photoUrl = URL.createObjectURL(file);
+            setSteps((prev) =>
+                prev.map((s, i) => (i === index ? { ...s, photo: photoUrl } : s))
+            );
+        } else {
+            // Remove photo if file is null
+            setSteps((prev) =>
+                prev.map((s, i) => (i === index ? { ...s, photo: undefined } : s))
+            );
+        }
     };
 
     const handleSave = () => {
@@ -119,20 +122,20 @@ const UpdateGuideModal = ({
                             key={index}
                             className="border rounded-md p-4 space-y-4 relative"
                         >
-                            <div className="flex justify-between items-center">
-                                <h3 className="font-semibold">Step {index + 1}</h3>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleRemoveStep(index)}
-                                    disabled={steps.length === 1}
-                                >
-                                    <Trash className="h-5 w-5 text-red-500" />
-                                </Button>
+                            {/* Pass existing photo and handle file selection */}
+                            <div>
+                                <Label className="mb-2">Step Image</Label>
+                                {/* Debug info - remove this after fixing */}
+                                {step.photo && (
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        Current image: {step.photo.substring(0, 50)}...
+                                    </p>
+                                )}
+                                <FileUploader
+                                    initialImageUrl={step.photo}
+                                    onFileSelect={(file) => handlePhotoChange(index, file)}
+                                />
                             </div>
-
-                            <FileUploader />
 
                             <div>
                                 <Label className="mb-2">Caption</Label>
@@ -158,12 +161,6 @@ const UpdateGuideModal = ({
                         </div>
                     ))}
 
-                    <Button
-                        onClick={handleAddStep}
-                        className="w-full bg-black text-white"
-                    >
-                        + Add Step
-                    </Button>
                 </div>
 
                 <DialogFooter className="mt-6">
