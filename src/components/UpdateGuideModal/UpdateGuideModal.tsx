@@ -13,15 +13,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/FileUploader/FileUploader";
 
 interface Step {
     title: string;
-    liveUrl: string;
-    description: string;
+    address: string;
     photo?: string;
-    instruction: string;
     caption: string;
 }
 
@@ -30,8 +27,7 @@ interface UpdateGuideModalProps {
     onOpenChange: (open: boolean) => void;
     guide: {
         title: string;
-        liveUrl: string;
-        description: string;
+        address: string;
         steps: Step[];
     };
     onUpdate: (updatedGuide: any) => void;
@@ -44,8 +40,7 @@ const UpdateGuideModal = ({
     onUpdate,
 }: UpdateGuideModalProps) => {
     const [title, setTitle] = useState(guide.title);
-    const [liveUrl, setLiveUrl] = useState(guide.liveUrl);
-    const [description, setDescription] = useState(guide.description);
+    const [address, setAddress] = useState(guide.address);
     const [steps, setSteps] = useState<Step[]>(guide.steps);
 
     const handleStepChange = (
@@ -75,14 +70,14 @@ const UpdateGuideModal = ({
     };
 
     const handleSave = () => {
-        const updatedGuide = { title, liveUrl, description, steps };
+        const updatedGuide = { title, address, steps };
         onUpdate(updatedGuide);
         onOpenChange(false);
     };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Update Guide</DialogTitle>
                 </DialogHeader>
@@ -91,26 +86,17 @@ const UpdateGuideModal = ({
                     <div>
                         <Label className="mb-2">Guide Title</Label>
                         <Input
-                            placeholder="Guide Title"
+                            placeholder="Title (optional) – e.g. Ian’s Home"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
                     </div>
                     <div>
-                        <Label className="mb-2">Live Link</Label>
+                        <Label className="mb-2">Guide Address</Label>
                         <Input
-                            placeholder="Live Link"
-                            value={liveUrl}
-                            onChange={(e) => setLiveUrl(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <Label className="mb-2">Guide Description</Label>
-                        <Textarea
-                            placeholder="Guide Description"
-                            className="h-28"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Enter street address or location"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
                         />
                     </div>
                 </div>
@@ -126,11 +112,6 @@ const UpdateGuideModal = ({
                             <div>
                                 <Label className="mb-2">Step Image</Label>
                                 {/* Debug info - remove this after fixing */}
-                                {step.photo && (
-                                    <p className="text-xs text-gray-500 mb-2">
-                                        Current image: {step.photo.substring(0, 50)}...
-                                    </p>
-                                )}
                                 <FileUploader
                                     initialImageUrl={step.photo}
                                     onFileSelect={(file) => handlePhotoChange(index, file)}
@@ -144,17 +125,6 @@ const UpdateGuideModal = ({
                                     value={step.caption}
                                     onChange={(e) =>
                                         handleStepChange(index, "caption", e.target.value)
-                                    }
-                                />
-                            </div>
-
-                            <div>
-                                <Label className="mb-2">Instruction</Label>
-                                <Input
-                                    placeholder="Instruction"
-                                    value={step.instruction}
-                                    onChange={(e) =>
-                                        handleStepChange(index, "instruction", e.target.value)
                                     }
                                 />
                             </div>

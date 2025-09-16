@@ -3,7 +3,6 @@ import { baseApi } from "./baseApi";
 
 export interface Step {
     caption: string;
-    instruction: string;
     photo: string;
 }
 
@@ -11,8 +10,7 @@ export interface Guide {
     [x: string]: any;
     _id: string;
     title: string;
-    description: string;
-    url: string;
+    address: string;
     steps: Step[];
     createdAt?: string;
     updatedAt?: string;

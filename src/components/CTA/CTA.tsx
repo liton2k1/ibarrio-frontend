@@ -10,7 +10,7 @@ const CTA = () => {
                     to find?</h1>
                 <p className='text-center text-2xl text-gray-600 mt-5 capitalize'>Create a visual guide in minutes — no sign‑up required.</p>
                 <Link href={"/create-guide"}>
-                    <button className='border border-black px-6 py-3 rounded-md font-semibold flex items-center gap-2 mt-5 cursor-pointer mx-auto'>Create Your Guide <ArrowRight /></button>
+                    <button className='border border-black px-6 py-3 rounded-md font-semibold flex items-center gap-2 mt-5 cursor-pointer mx-auto'>Create Your Doorstep Page <ArrowRight /></button>
                 </Link>
             </div>
         </div>

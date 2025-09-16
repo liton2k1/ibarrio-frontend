@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,30 +22,27 @@ import email from "../../../../public/logo/mail.png";
 import Image from "next/image";
 import { useCreateGuideMutation } from "@/redux/guideApi";
 import toast from "react-hot-toast";
-import Container from "@/components/Container/Container";
-import logo from "../../../../public/logo/doorstep.png";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Step {
     caption: string;
     photo?: File | null;
 }
 
-const GuideManager = () => {
+const CreateGuide = () => {
+    const router = useRouter();
     const [createGuide, { isLoading }] = useCreateGuideMutation();
 
-    // Guide state
     const [title, setTitle] = useState<string>("");
     const [address, setAddress] = useState<string>("");
-    const [steps, setSteps] = useState<Step[]>([{ caption: "", photo: null }]);
 
-    // UI state
-    const [isPreview, setIsPreview] = useState(false);
-    const [previewData, setPreviewData] = useState<any>(null);
-    const [guideId, setGuideId] = useState<string | null>(null);
+    const [steps, setSteps] = useState<Step[]>([
+        { caption: "", photo: null },
+    ]);
+
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+    const [guideId, setGuideId] = useState<string | null>(null);
 
-    // Add/remove steps
     const handleAddStep = () => {
         if (steps.length >= 5) {
             toast.error("You can add maximum 5 steps.");
@@ -66,7 +62,7 @@ const GuideManager = () => {
         );
     };
 
-    // Copy to clipboard
+    // Copy to clipboard helper
     const handleCopy = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
@@ -76,23 +72,36 @@ const GuideManager = () => {
         }
     };
 
-    // Preview
+    // Handle Preview - Client-side only, no database
     const handlePreview = () => {
+        // Validate required fields
         if (!address.trim()) {
             toast.error("Please enter an address before previewing.");
             return;
         }
-        if (steps.every((step) => !step.caption.trim())) {
+
+        if (steps.every(step => !step.caption.trim())) {
             toast.error("Please add at least one step with a caption.");
             return;
         }
 
-        const data = { title, address, steps };
-        setPreviewData(data);
-        setIsPreview(true);
+        // Store guide data in sessionStorage for preview
+        const previewData = {
+            title,
+            address,
+            steps: steps.map((step) => ({
+                caption: step.caption,
+                photo: step.photo,
+            })),
+        };
+
+        sessionStorage.setItem('previewGuideData', JSON.stringify(previewData));
+
+        // Navigate to preview page
+        router.push('/preview-guide');
     };
 
-    // Publish
+    // Handle Publish - This is when we hit the database
     const handlePublish = async () => {
         const formData = new FormData();
         formData.append(
@@ -100,103 +109,41 @@ const GuideManager = () => {
             JSON.stringify({
                 title,
                 address,
-                steps: steps.map((step) => ({ caption: step.caption })),
+                steps: steps.map((step) => ({
+                    caption: step.caption,
+                })),
             })
         );
+
         steps.forEach((step) => {
             if (step.photo) formData.append("file", step.photo);
         });
 
         try {
             const res = await createGuide(formData).unwrap();
+            console.log("Guide published:", res);
 
-            // Save guideId first
+            // Save the guideId
             setGuideId(res?.data?._id);
 
-            // Exit preview mode to show modal
-            setIsPreview(false);
-
-            // Open confirmation modal
+            toast.success("Guide published successfully!");
             setOpenConfirmationModal(true);
 
-            toast.success("Guide published successfully!");
-
-            // Clean up preview storage
-            sessionStorage.removeItem("previewGuideData");
+            // Clear sessionStorage since we've published
+            sessionStorage.removeItem('previewGuideData');
         } catch (err: any) {
             console.error(err);
             toast.error(err?.data?.message || "Failed to publish guide");
         }
     };
 
-    // Share URLs
+    // Build Share Links
     const baseUrl =
         typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-    const privateEditUrl = guideId ? `${baseUrl}/private-guide/${guideId}` : "";
-    const publicUrl = guideId ? `${baseUrl}/public-guide/${guideId}` : "";
 
-    // Preview UI
-    if (isPreview && previewData) {
-        return (
-            <Container className="mt-20">
-                <div className="text-center">
-                    <h1 className="lg:text-5xl text-3xl font-bold mb-3">{previewData.title}</h1>
-                    <p className="text-gray-600 text-lg">{previewData.address}</p>
-                </div>
+    const privateEditUrl = guideId ? `${baseUrl}/edit-guide/${guideId}` : "";
+    const publicUrl = guideId ? `${baseUrl}/guide/${guideId}` : "";
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
-                    {previewData.steps.map((step: Step, index: number) => (
-                        <div
-                            key={index}
-                        >
-                            <div>
-                                <p className="flex items-center gap-3 md:text-xl font-semibold mb-5">
-                                    <span className="bg-black text-white text-xl font-bold min-w-8 min-h-8 flex items-center justify-center rounded-full flex-shrink-0">
-                                        {index + 1}
-                                    </span>
-                                    {step.caption}
-                                </p>
-                                {step.photo && (
-                                    <Image
-                                        src={URL.createObjectURL(step.photo)}
-                                        alt={`Step ${index + 1}`}
-                                        className="w-full h-60 object-cover rounded-md"
-                                        height={400}
-                                        width={400}
-                                    />
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="flex gap-5 mt-5">
-                    <Button
-                        variant="outline"
-                        onClick={() => setIsPreview(false)}
-                        className="flex-1"
-                    >
-                        Back to Edit
-                    </Button>
-                    <Button
-                        onClick={handlePublish}
-                        className="flex-1 bg-[#9E58CD] hover:bg-[#9E58CD] text-white"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "Publishing..." : "Publish"}
-                    </Button>
-                </div>
-                <div className="flex items-center justify-center gap-2 mt-10">
-                    <p className="text-center text-gray-400">Powered By</p>
-                    <Link href="/" className="flex items-center">
-                        <Image className="w-28" src={logo} alt="Doorstep Logo" />
-                    </Link>
-                </div>
-            </Container>
-        );
-    }
-
-    // Create Guide UI
     return (
         <div className="sm:max-w-[800px] mx-auto lg:px-0 px-5 my-20">
             <h1 className="text-3xl font-bold text-center mb-10">Create Your Doorstep Page</h1>
@@ -224,7 +171,10 @@ const GuideManager = () => {
 
                 {/* Steps Form */}
                 {steps.map((step, index) => (
-                    <div key={index} className="mt-5 space-y-4 border rounded-md p-4 relative">
+                    <div
+                        key={index}
+                        className="mt-5 space-y-4 border rounded-md p-4 relative"
+                    >
                         <div className="flex justify-between items-center">
                             <h3 className="font-semibold">Step {index + 1}</h3>
                             <Button
@@ -265,26 +215,35 @@ const GuideManager = () => {
                 </div>
             </div>
 
-            {/* Preview CTA */}
+            {/* Preview Button */}
             <div className="mt-10">
                 <Button
                     onClick={handlePreview}
                     className="w-full bg-[#9E58CD] hover:bg-[#9E58CD] text-white flex items-center justify-center gap-2"
-                    disabled={
-                        !address.trim() || steps.every((step) => !step.caption.trim())
-                    }
                 >
                     Preview Page
                     <ArrowRight className="w-4 h-4" />
                 </Button>
             </div>
 
+            {/* Hidden Publish Button - This would be called from preview page */}
+            {typeof window !== "undefined" && window.location.pathname === "/preview-guide" && (
+                <div className="mt-5">
+                    <Button
+                        onClick={handlePublish}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? "Publishing..." : "Publish"}
+                    </Button>
+                </div>
+            )}
 
-            {/* Confirmation Modal */}
+            {/* Confirmation Modal - Shows after publishing */}
             <Dialog open={openConfirmationModal} onOpenChange={setOpenConfirmationModal}>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl">🎉 Your Doorstep Page is Live!</DialogTitle>
+                        <DialogTitle>🎉 Your Doorstep Page is Live!</DialogTitle>
                         <DialogDescription>
                             Your guide has been published successfully. Here are your links:
                         </DialogDescription>
@@ -292,6 +251,7 @@ const GuideManager = () => {
 
                     {guideId ? (
                         <div className="flex flex-col gap-6 mt-4">
+                            {/* Social Share */}
                             <div className="flex gap-4 justify-center mt-3">
                                 <a
                                     href={`https://www.facebook.com/sharer/sharer.php?u=${publicUrl}`}
@@ -301,7 +261,9 @@ const GuideManager = () => {
                                     <Image src={facebook} alt="fb" className="w-8 h-8 cursor-pointer" />
                                 </a>
                                 <a
-                                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(publicUrl)}`}
+                                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                                        publicUrl
+                                    )}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
@@ -315,7 +277,9 @@ const GuideManager = () => {
                                     <Image src={messenger} alt="messenger" className="w-8 h-8 cursor-pointer" />
                                 </a>
                                 <a
-                                    href={`mailto:?subject=Check this guide&body=${encodeURIComponent(publicUrl)}`}
+                                    href={`mailto:?subject=Check this guide&body=${encodeURIComponent(
+                                        publicUrl
+                                    )}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
@@ -370,4 +334,4 @@ const GuideManager = () => {
     );
 };
 
-export default GuideManager;
+export default CreateGuide;

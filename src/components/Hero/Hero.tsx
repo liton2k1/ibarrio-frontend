@@ -13,9 +13,12 @@ const Hero = () => {
                 <p className='lg:text-2xl text-lg text-gray-600 capitalize mt-5 md:text-start text-center'>Guide delivery drivers right to your door — clear,
                     quick, and hassle‑free</p>
                 <div className='flex md:justify-start justify-center'>
-                    <Link href={"/create-guide"}>
-                        <button className='bg-[#9E58CD] px-6 py-3 rounded-md text-white font-semibold flex items-center gap-2 mt-5 cursor-pointer'>Create Your Guide <ArrowRight /></button>
+                   <div>
+                     <Link href={"/create-guide"}>
+                        <button className='bg-[#9E58CD] px-6 py-3 rounded-md text-white font-semibold flex items-center gap-2 mt-5 cursor-pointer'>Create Your Doorstep Page <ArrowRight /></button>
                     </Link>
+                    <p className='text-gray-500 mt-5'>&quot;Free - no account required&quot;</p>
+                   </div>
                 </div>
             </div>
             <div className='order-1 md:order-2'>

@@ -10,8 +10,8 @@ const page = () => {
     return (
         <div>
             <Hero />
-            <Partner />
             <WorkProcess />
+            <Partner />
             {/* <GuideList /> */}
             <CTA />
             <FAQ />
