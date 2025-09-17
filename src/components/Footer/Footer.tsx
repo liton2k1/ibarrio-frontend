@@ -9,7 +9,7 @@ const Footer = () => {
         <footer className="bg-[#DEACFF] py-12 mt-20">
             <Container className="flex flex-col items-center text-center gap-6">
                 {/* Logo */}
-                <Image className="w-44" src={logo} alt="Doorstep logo" priority />
+                <Image className="md:w-44 w-32" src={logo} alt="Doorstep logo" priority />
 
                 {/* Links */}
                 <div className="flex gap-6 text-gray-700 font-medium">

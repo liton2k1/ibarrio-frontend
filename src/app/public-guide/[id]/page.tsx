@@ -5,8 +5,9 @@ import Container from "@/components/Container/Container";
 import Image from "next/image";
 import { Step, useGetGuideByIdQuery } from "@/redux/guideApi";
 import { useParams } from "next/navigation";
-import logo from "../../../../../public/logo/doorstep.png";
+import logo from "../../../../public/logo/doorstep.png"
 import Link from "next/link";
+import { MapPin } from "lucide-react";
 
 const PublicGuide = () => {
     const { id } = useParams() as { id: string };
@@ -17,13 +18,16 @@ const PublicGuide = () => {
     if (isError || !guide) return <Container>Guide not found!</Container>;
 
     return (
-        <Container className="mt-20">
+        <Container className="max-w-xl mx-auto mt-20">
             <div className="text-center">
                 <h1 className="lg:text-5xl text-3xl font-bold mb-3">{guide?.data?.title}</h1>
-                <p className="text-gray-600 text-lg">{guide?.data?.address}</p>
+                <p className="text-gray-600 text-lg flex items-center justify-center gap-2">
+                    <MapPin className="w-5 h-5 text-gray-500" />
+                    {guide?.data?.address}
+                </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
+            <div className="grid grid-cols-1 gap-10 mt-10">
                 {guide?.data?.steps?.map((step: Step, index: number) => (
                     <div
                         key={index}
@@ -37,7 +41,7 @@ const PublicGuide = () => {
                             </p>
                             {step.photo && (
                                 <Image
-                                    className="h-60 w-full object-cover rounded-md"
+                                    className="h-72 w-full rounded-md"
                                     src={step.photo}
                                     alt={`Step ${index + 1}`}
                                     width={600}
@@ -48,10 +52,10 @@ const PublicGuide = () => {
                     </div>
                 ))}
             </div>
-            <div className="flex items-center justify-center gap-2 mt-10">
+            <div className="flex items-center justify-center gap-2 my-20">
                 <p className="text-center text-gray-400">Powered By</p>
                 <Link href="/" className="flex items-center">
-                    <Image className="w-28" src={logo} alt="Doorstep Logo" />
+                    <Image className="w-24" src={logo} alt="Doorstep Logo" />
                 </Link>
             </div>
         </Container>

@@ -9,7 +9,7 @@ const Navbar = () => {
         <div className='border-b border-gray-300 py-7'>
             <Container>
                 <Link href="/">
-                    <Image className='w-72 mx-auto' src={logo} alt='' />
+                    <Image className='md:w-44 w-32 mx-auto' src={logo} alt='' />
                 </Link>
             </Container>
         </div>

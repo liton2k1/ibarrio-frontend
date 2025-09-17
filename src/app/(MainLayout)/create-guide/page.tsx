@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import FileUploader from "@/components/FileUploader/FileUploader";
-import { Trash, Copy, ArrowRight } from "lucide-react";
+import { Trash, Copy, ArrowRight, X, MapPin } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -66,6 +66,11 @@ const GuideManager = () => {
         );
     };
 
+    // Remove image from step
+    const handleRemoveImage = (index: number) => {
+        handleStepChange(index, "photo", null);
+    };
+
     // Copy to clipboard
     const handleCopy = async (text: string) => {
         try {
@@ -84,6 +89,10 @@ const GuideManager = () => {
         }
         if (steps.every((step) => !step.caption.trim())) {
             toast.error("Please add at least one step with a caption.");
+            return;
+        }
+        if (steps.every((step) => !step.photo)) {
+            toast.error("Please add at least one image before previewing.");
             return;
         }
 
@@ -138,13 +147,17 @@ const GuideManager = () => {
     // Preview UI
     if (isPreview && previewData) {
         return (
-            <Container className="mt-20">
+            <Container className="max-w-xl mx-auto mt-20">
                 <div className="text-center">
                     <h1 className="lg:text-5xl text-3xl font-bold mb-3">{previewData.title}</h1>
-                    <p className="text-gray-600 text-lg">{previewData.address}</p>
+                    {/* <p className="text-gray-600 text-lg">{previewData.address}</p> */}
+                    <p className="text-gray-600 text-lg flex items-center justify-center gap-2">
+                        <MapPin className="w-5 h-5 text-gray-500" />
+                        {previewData.address}
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
+                <div className="grid grid-cols-1 gap-10 mt-10">
                     {previewData.steps.map((step: Step, index: number) => (
                         <div
                             key={index}
@@ -186,10 +199,10 @@ const GuideManager = () => {
                         {isLoading ? "Publishing..." : "Publish"}
                     </Button>
                 </div>
-                <div className="flex items-center justify-center gap-2 mt-10">
+                <div className="flex items-center justify-center gap-2 mt-20">
                     <p className="text-center text-gray-400">Powered By</p>
                     <Link href="/" className="flex items-center">
-                        <Image className="w-28" src={logo} alt="Doorstep Logo" />
+                        <Image className="w-24" src={logo} alt="Doorstep Logo" />
                     </Link>
                 </div>
             </Container>
@@ -204,15 +217,15 @@ const GuideManager = () => {
             <div className="border rounded-md p-5 space-y-5">
                 <div className="space-y-4">
                     <div>
-                        <Label className="mb-2">Guide Title</Label>
+                        <Label className="mb-2">Title (Optional)</Label>
                         <Input
-                            placeholder="Title (optional) – e.g. Ian's Home"
+                            placeholder="Title – e.g. Mary's Home"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
                     </div>
                     <div>
-                        <Label className="mb-2">Guide Address</Label>
+                        <Label className="mb-2">Address</Label>
                         <Input
                             placeholder="Enter street address or location"
                             value={address}
@@ -231,6 +244,7 @@ const GuideManager = () => {
                                 type="button"
                                 variant="ghost"
                                 size="icon"
+                                className="rounded-full"
                                 onClick={() => handleRemoveStep(index)}
                                 disabled={steps.length === 1}
                             >
@@ -238,9 +252,31 @@ const GuideManager = () => {
                             </Button>
                         </div>
 
-                        <FileUploader
-                            onFileSelect={(file) => handleStepChange(index, "photo", file)}
-                        />
+                        {/* Show existing image if available */}
+                        {step.photo ? (
+                            <div className="relative">
+                                <Image
+                                    src={URL.createObjectURL(step.photo)}
+                                    alt={`Step ${index + 1}`}
+                                    className="w-full h-60 object-cover rounded-md"
+                                    height={400}
+                                    width={400}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon"
+                                    className="absolute top-2 right-2 rounded-full"
+                                    onClick={() => handleRemoveImage(index)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ) : (
+                            <FileUploader
+                                onFileSelect={(file) => handleStepChange(index, "photo", file)}
+                            />
+                        )}
 
                         <div>
                             <Label className="mb-2">Caption</Label>
@@ -263,20 +299,22 @@ const GuideManager = () => {
                         + Add Steps
                     </Button>
                 </div>
-            </div>
 
-            {/* Preview CTA */}
-            <div className="mt-10">
-                <Button
-                    onClick={handlePreview}
-                    className="w-full bg-[#9E58CD] hover:bg-[#9E58CD] text-white flex items-center justify-center gap-2"
-                    disabled={
-                        !address.trim() || steps.every((step) => !step.caption.trim())
-                    }
-                >
-                    Preview Page
-                    <ArrowRight className="w-4 h-4" />
-                </Button>
+                {/* Preview CTA */}
+                <div className="">
+                    <Button
+                        onClick={handlePreview}
+                        className="w-full bg-[#9E58CD] hover:bg-[#9E58CD] text-white flex items-center justify-center gap-2"
+                        disabled={
+                            !address.trim() ||
+                            steps.every((step) => !step.caption.trim()) ||
+                            steps.every((step) => !step.photo)
+                        }
+                    >
+                        Preview Page
+                        <ArrowRight className="w-4 h-4" />
+                    </Button>
+                </div>
             </div>
 
 

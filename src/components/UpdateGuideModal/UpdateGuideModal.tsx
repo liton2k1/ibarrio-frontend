@@ -77,22 +77,22 @@ const UpdateGuideModal = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Update Guide</DialogTitle>
                 </DialogHeader>
 
                 <div className="space-y-4 mt-4">
                     <div>
-                        <Label className="mb-2">Guide Title</Label>
+                        <Label className="mb-2">Title (Optional)</Label>
                         <Input
-                            placeholder="Title (optional) – e.g. Ian’s Home"
+                            placeholder="Title – e.g. Mary's Home"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
                     </div>
                     <div>
-                        <Label className="mb-2">Guide Address</Label>
+                        <Label className="mb-2">Address</Label>
                         <Input
                             placeholder="Enter street address or location"
                             value={address}

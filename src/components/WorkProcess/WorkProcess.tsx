@@ -28,7 +28,7 @@ const WorkProcess = () => {
     <Container className="mt-20">
       <h1 className="lg:text-5xl text-3xl font-bold text-center">How It Works</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-16 text-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:mt-16 mt-8 text-center">
         {steps.map((step, index) => (
           <div
             key={index}
