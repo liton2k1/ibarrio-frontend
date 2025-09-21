@@ -5,14 +5,14 @@ import Marquee from "react-fast-marquee";
 import Image from "next/image";
 
 // Partner logos
-import logo1 from "../../../public/logo/logo (1).jpg"
+import logo1 from "../../../public/logo/logo (1).png"
 import logo2 from "../../../public/logo/logo (2).jpg";
 import logo3 from "../../../public/logo/logo (3).jpg";
 import logo4 from "../../../public/logo/logo (4).jpg";
-import logo5 from "../../../public/logo/logo (5).jpg";
-import logo6 from "../../../public/logo/logo (6).jpg";
+import logo5 from "../../../public/logo/logo (5).png";
+import logo6 from "../../../public/logo/logo (6).png";
 import logo7 from "../../../public/logo/logo (7).jpg";
-import logo8 from "../../../public/logo/logo (8).jpg";
+import logo8 from "../../../public/logo/logo (8).png";
 
 const Partner = () => {
     const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8,];
