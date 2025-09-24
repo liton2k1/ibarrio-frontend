@@ -5,14 +5,14 @@ import Marquee from "react-fast-marquee";
 import Image from "next/image";
 
 // Partner logos
-import logo1 from "../../../public/logo/logo (1).png"
-import logo2 from "../../../public/logo/logo (2).jpg";
-import logo3 from "../../../public/logo/logo (3).jpg";
-import logo4 from "../../../public/logo/logo (4).jpg";
-import logo5 from "../../../public/logo/logo (5).png";
-import logo6 from "../../../public/logo/logo (6).png";
-import logo7 from "../../../public/logo/logo (7).jpg";
-import logo8 from "../../../public/logo/logo (8).png";
+import logo1 from "../../../public/logo/doordash.jpg"
+import logo2 from "../../../public/logo/uber.jpg";
+import logo3 from "../../../public/logo/grubhub.jpg";
+import logo4 from "../../../public/logo/instacart.jpg";
+import logo5 from "../../../public/logo/amazon.jpg";
+import logo6 from "../../../public/logo/walmart.jpg";
+import logo7 from "../../../public/logo/ups.jpg";
+import logo8 from "../../../public/logo/uber.jpg";
 
 const Partner = () => {
     const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8,];
@@ -39,13 +39,13 @@ const Partner = () => {
             </div>
 
             {/* Grid for small screens */}
-            <div className="grid grid-cols-4 gap-3 place-items-center md:hidden">
+            <div className="grid grid-cols-4 gap-2 place-items-center md:hidden">
                 {logos.map((logo, index) => (
                     <div key={index} className="flex items-center justify-center">
                         <Image
                             src={logo}
                             alt={`partner-logo-${index}`}
-                            className="h-10 w-auto object-contain transition duration-300 border p-2 rounded-md"
+                            className="h-10 w-auto object-contain transition duration-300 border p-0.5 rounded-md"
                         />
                     </div>
                 ))}
