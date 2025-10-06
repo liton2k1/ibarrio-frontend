@@ -138,9 +138,9 @@ const CreateGuide = () => {
         }
     };
 
-    // Share URLs
-    const baseUrlEdit = typeof window !== "undefined" ? window.location.origin : "https://doorstep.app";
-    const baseUrlD = typeof window !== "undefined" ? window.location.origin : "https://mydoorstep.app";
+    // Share URLs (different domains for edit and public)
+    const baseUrlEdit = "https://doorstep.app";  
+    const baseUrlD = "https://mydoorstep.app"; 
     const privateEditUrl = guideId ? `${baseUrlEdit}/edit/${guideId}` : "";
     const publicUrl = guideId ? `${baseUrlD}/d/${guideId}` : "";
 
@@ -150,7 +150,6 @@ const CreateGuide = () => {
             <Container className="max-w-xl mx-auto mt-20">
                 <div className="text-center">
                     <h1 className="lg:text-5xl text-3xl font-bold mb-3">{previewData.title}</h1>
-                    {/* <p className="text-gray-600 text-lg">{previewData.address}</p> */}
                     <p className="text-gray-600 text-lg flex items-center justify-center gap-2">
                         <MapPin className="w-5 h-5 text-gray-500" />
                         {previewData.address}
@@ -159,26 +158,22 @@ const CreateGuide = () => {
 
                 <div className="grid grid-cols-1 gap-10 mt-10">
                     {previewData.steps.map((step: Step, index: number) => (
-                        <div
-                            key={index}
-                        >
-                            <div>
-                                <p className="flex items-center gap-3 md:text-xl font-semibold mb-5">
-                                    <span className="bg-black text-white text-xl font-bold min-w-8 min-h-8 flex items-center justify-center rounded-full flex-shrink-0">
-                                        {index + 1}
-                                    </span>
-                                    {step.caption}
-                                </p>
-                                {step.photo && (
-                                    <Image
-                                        src={URL.createObjectURL(step.photo)}
-                                        alt={`Step ${index + 1}`}
-                                        className="w-full md:h-96 h-64 object-cover rounded-md"
-                                        height={400}
-                                        width={400}
-                                    />
-                                )}
-                            </div>
+                        <div key={index}>
+                            <p className="flex items-center gap-3 md:text-xl font-semibold mb-5">
+                                <span className="bg-black text-white text-xl font-bold min-w-8 min-h-8 flex items-center justify-center rounded-full flex-shrink-0">
+                                    {index + 1}
+                                </span>
+                                {step.caption}
+                            </p>
+                            {step.photo && (
+                                <Image
+                                    src={URL.createObjectURL(step.photo)}
+                                    alt={`Step ${index + 1}`}
+                                    className="w-full md:h-96 h-64 object-cover rounded-md"
+                                    height={400}
+                                    width={400}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
@@ -199,6 +194,7 @@ const CreateGuide = () => {
                         {isLoading ? "Publishing..." : "Publish"}
                     </Button>
                 </div>
+
                 <div className="flex items-center justify-center gap-2 mt-20">
                     <p className="text-center text-gray-400">Powered By</p>
                     <Link href="/" className="flex items-center">
@@ -252,7 +248,6 @@ const CreateGuide = () => {
                             </Button>
                         </div>
 
-                        {/* Show existing image if available */}
                         {step.photo ? (
                             <div className="relative">
                                 <Image
@@ -316,7 +311,6 @@ const CreateGuide = () => {
                     </Button>
                 </div>
             </div>
-
 
             {/* Confirmation Modal */}
             <Dialog open={openConfirmationModal} onOpenChange={setOpenConfirmationModal}>
