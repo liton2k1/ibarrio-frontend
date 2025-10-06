@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Doorstep - Create Your Page",
+  title: "Doorstep",
   description: "Create your Doorstep page by adding steps, titles, and addresses for better user interaction.",
 };
 

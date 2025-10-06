@@ -6,13 +6,13 @@ import Image from "next/image";
 
 // Partner logos
 import logo1 from "../../../public/logo/doordash.jpg"
-import logo2 from "../../../public/logo/uber.jpg";
+import logo2 from "../../../public/logo/uber.png";
 import logo3 from "../../../public/logo/grubhub.jpg";
 import logo4 from "../../../public/logo/instacart.jpg";
-import logo5 from "../../../public/logo/amazon.jpg";
+import logo5 from "../../../public/logo/amazon.png";
 import logo6 from "../../../public/logo/walmart.jpg";
 import logo7 from "../../../public/logo/ups.jpg";
-import logo8 from "../../../public/logo/uber.jpg";
+import logo8 from "../../../public/logo/fedex.png";
 
 const Partner = () => {
     const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8,];
@@ -20,12 +20,12 @@ const Partner = () => {
     return (
         <Container className="md:mt-36 mt-20">
             <h1 className="md:text-4xl text-3xl font-bold text-center md:mb-20 mb-5">
-                Works everywhere you get deliveries
+                Works with any delivery app or service
             </h1>
 
             {/* Marquee for large screens */}
             <div className="hidden md:block">
-                <Marquee gradient={false} speed={50} pauseOnHover>
+                <Marquee gradient={false} speed={50}>
                     {logos.map((logo, index) => (
                         <div key={index} className="flex items-center mx-5">
                             <Image

@@ -9,7 +9,7 @@ const Hero = () => {
     return (
         <Container className='grid grid-cols-1 md:grid-cols-2 gap-10 items-center mt-20'>
             <div className='order-2 md:order-1'>
-                <h1 className='lg:text-6xl text-3xl font-bold leading-tight capitalize md:text-start text-center'>Works with any delivery app</h1>
+                <h1 className='lg:text-6xl text-3xl font-bold leading-tight capitalize md:text-start text-center'>Clear Directions for Every Delivery</h1>
                 <p className='lg:text-2xl text-lg text-gray-600 capitalize mt-5 md:text-start text-center'>Guide delivery drivers right to your door — clear,
                     quick, and hassle‑free</p>
                 <div className="flex md:justify-start justify-center">
