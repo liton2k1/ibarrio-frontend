@@ -3,7 +3,7 @@
 import React from "react";
 import Container from "@/components/Container/Container";
 import Image from "next/image";
-import { Step, useGetGuideByIdQuery } from "@/redux/guideApi";
+import { Step, useGetGuideByPublicIdQuery } from "@/redux/guideApi"; // Updated import
 import { useParams } from "next/navigation";
 import logo from "../../../../public/logo/doorstep.png"
 import Link from "next/link";
@@ -11,27 +11,46 @@ import { MapPin } from "lucide-react";
 
 const PublicGuide = () => {
     const { id } = useParams() as { id: string };
+    // console.log(id);
 
-    const { data: guide, isLoading, isError } = useGetGuideByIdQuery(id);
+    // Updated hook to use getGuideByPublicIdQuery
+    const { data: guideResponse, isLoading, isError } = useGetGuideByPublicIdQuery(id);
 
-    if (isLoading) return <Container>Loading...</Container>;
-    if (isError || !guide) return <Container>Guide not found!</Container>;
+    if (isLoading) return (
+        <Container className="max-w-xl mx-auto mt-20">
+            <div className="text-center">Loading...</div>
+        </Container>
+    );
+
+    if (isError) return (
+        <Container className="max-w-xl mx-auto mt-20">
+            <div className="text-center text-red-500">Guide not found!</div>
+        </Container>
+    );
+
+    if (!guideResponse?.data) return (
+        <Container className="max-w-xl mx-auto mt-20">
+            <div className="text-center">Guide not found!</div>
+        </Container>
+    );
+
+    const guideData = guideResponse.data;
 
     return (
         <Container className="max-w-xl mx-auto mt-20">
             <div className="text-center">
-                <h1 className="lg:text-5xl text-3xl font-bold mb-3">{guide?.data?.title}</h1>
+                <h1 className="lg:text-5xl text-3xl font-bold mb-3">
+                    {guideData.title || "Untitled Guide"}
+                </h1>
                 <p className="text-gray-600 text-lg flex items-center justify-center gap-2">
                     <MapPin className="w-5 h-5 text-gray-500" />
-                    {guide?.data?.address}
+                    {guideData.address}
                 </p>
             </div>
 
             <div className="grid grid-cols-1 gap-10 mt-10">
-                {guide?.data?.steps?.map((step: Step, index: number) => (
-                    <div
-                        key={index}
-                    >
+                {guideData.steps?.map((step: Step, index: number) => (
+                    <div key={step._id || index}>
                         <div>
                             <p className="flex items-center gap-3 md:text-xl font-semibold mb-5">
                                 <span className="bg-black text-white text-xl font-bold min-w-8 min-h-8 flex items-center justify-center rounded-full flex-shrink-0">
@@ -41,9 +60,9 @@ const PublicGuide = () => {
                             </p>
                             {step.photo && (
                                 <Image
-                                    className="h-72 w-full rounded-md"
+                                    className="h-80 w-full rounded-md object-cover"
                                     src={step.photo}
-                                    alt={`Step ${index + 1}`}
+                                    alt={`Step ${index + 1}: ${step.caption}`}
                                     width={600}
                                     height={400}
                                 />
@@ -52,6 +71,7 @@ const PublicGuide = () => {
                     </div>
                 ))}
             </div>
+
             <div className="flex items-center justify-center gap-2 my-20">
                 <p className="text-center text-gray-400">Powered By</p>
                 <Link href="/" className="flex items-center">

@@ -43,7 +43,8 @@ const CreateGuide = () => {
     // UI state
     const [isPreview, setIsPreview] = useState(false);
     const [previewData, setPreviewData] = useState<any>(null);
-    const [guideId, setGuideId] = useState<string | null>(null);
+    const [publicGuideId, setPublicGuideId] = useState<string | null>(null);
+    const [privateGuideId, setPrivateGuideId] = useState<string | null>(null);
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
 
     // Add/remove steps
@@ -119,8 +120,9 @@ const CreateGuide = () => {
         try {
             const res = await createGuide(formData).unwrap();
 
-            // Save guideId first
-            setGuideId(res?.data?._id);
+            // Save guideId
+            setPublicGuideId(res?.data?.publicId);
+            setPrivateGuideId(res?.data?.privateId);
 
             // Exit preview mode to show modal
             setIsPreview(false);
@@ -139,10 +141,12 @@ const CreateGuide = () => {
     };
 
     // Share URLs (different domains for edit and public)
-    const baseUrlEdit = "https://doorstep.app";  
-    const baseUrlD = "https://mydoorstep.app"; 
-    const privateEditUrl = guideId ? `${baseUrlEdit}/edit/${guideId}` : "";
-    const publicUrl = guideId ? `${baseUrlD}/d/${guideId}` : "";
+    const baseUrlEdit = "https://doorstep.app";
+    const baseUrlD = "https://mydoorstep.app";
+    const privateEditUrl = privateGuideId ? `${baseUrlEdit}/edit/${privateGuideId}` : "";
+    const publicUrl = publicGuideId ? `${baseUrlD}/d/${publicGuideId}` : "";
+
+    console.log(publicUrl, privateEditUrl);
 
     // Preview UI
     if (isPreview && previewData) {
@@ -169,7 +173,7 @@ const CreateGuide = () => {
                                 <Image
                                     src={URL.createObjectURL(step.photo)}
                                     alt={`Step ${index + 1}`}
-                                    className="w-full md:h-96 h-64 object-cover rounded-md"
+                                    className="w-full md:h-96 h-64 rounded-md"
                                     height={400}
                                     width={400}
                                 />
@@ -207,7 +211,7 @@ const CreateGuide = () => {
 
     // Create Guide UI
     return (
-        <div className="sm:max-w-[800px] mx-auto lg:px-0 px-5 my-20">
+        <div className="sm:max-w-[600px] mx-auto lg:px-0 px-5 my-20">
             <h1 className="text-3xl font-bold text-center mb-10">Create Your Doorstep Page</h1>
 
             <div className="border rounded-md p-5 space-y-5">
@@ -322,7 +326,7 @@ const CreateGuide = () => {
                         </DialogDescription>
                     </DialogHeader>
 
-                    {guideId ? (
+                    {privateGuideId || publicGuideId ? (
                         <div className="flex flex-col gap-6 mt-4">
                             <div className="flex gap-4 justify-center mt-3">
                                 <a

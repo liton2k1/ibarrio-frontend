@@ -2,6 +2,7 @@
 import { baseApi } from "./baseApi";
 
 export interface Step {
+    _id?: string;
     caption: string;
     photo: string;
 }
@@ -12,6 +13,8 @@ export interface Guide {
     title: string;
     address: string;
     steps: Step[];
+    publicId: string;
+    privateId: string;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -20,6 +23,12 @@ interface GuideResponse {
     success: boolean;
     message: string;
     data: Guide;
+}
+
+interface GuidesResponse {
+    success: boolean;
+    message: string;
+    data: Guide[];
 }
 
 export const guideApi = baseApi.injectEndpoints({
@@ -34,7 +43,7 @@ export const guideApi = baseApi.injectEndpoints({
         }),
 
         // Get all guides
-        getAllGuides: build.query<Guide[], void>({
+        getAllGuides: build.query<GuidesResponse, void>({
             query: () => ({
                 url: "/guide",
                 method: "GET",
@@ -42,33 +51,41 @@ export const guideApi = baseApi.injectEndpoints({
             providesTags: ["Guide"],
         }),
 
-        // Get guide by ID
-        getGuideById: build.query<Guide, string>({
-            query: (id) => ({
-                url: `/guide/${id}`,
+        // Get guide by publicId (for public viewing)
+        getGuideByPublicId: build.query<GuideResponse, string>({
+            query: (publicId) => ({
+                url: `/guide/public/${publicId}`,
                 method: "GET",
             }),
             providesTags: ["Guide"],
         }),
 
-        // Update guide
+        // Get guide by privateId (for editing) - ADD THIS ENDPOINT
+        getGuideByPrivateId: build.query<GuideResponse, string>({
+            query: (privateId) => ({
+                url: `/guide/private/${privateId}`,
+                method: "GET",
+            }),
+            providesTags: ["Guide"],
+        }),
+
+        // Update guide by privateId
         updateGuide: build.mutation<
-            Guide,
-            { id: string; data: Partial<Omit<Guide, "id">> }
+            GuideResponse,
+            { privateId: string; data: FormData | any }
         >({
-            query: ({ id, data }) => ({
-                url: `/guide/${id}`,
+            query: ({ privateId, data }) => ({
+                url: `/guide/${privateId}`,
                 method: "PUT",
                 body: data,
             }),
             invalidatesTags: ["Guide"],
         }),
 
-
-        // Delete guide
+        // Delete guide by privateId
         deleteGuide: build.mutation<{ success: boolean; id: string }, string>({
-            query: (id) => ({
-                url: `/guide/${id}`,
+            query: (privateId) => ({
+                url: `/guide/${privateId}`,
                 method: "DELETE",
             }),
             invalidatesTags: ["Guide"],
@@ -80,7 +97,8 @@ export const guideApi = baseApi.injectEndpoints({
 export const {
     useCreateGuideMutation,
     useGetAllGuidesQuery,
-    useGetGuideByIdQuery,
+    useGetGuideByPublicIdQuery,
+    useGetGuideByPrivateIdQuery, // ADD THIS HOOK
     useUpdateGuideMutation,
     useDeleteGuideMutation,
 } = guideApi;
