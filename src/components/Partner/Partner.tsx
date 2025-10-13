@@ -15,7 +15,7 @@ import logo7 from "../../../public/logo/ups.jpg";
 import logo8 from "../../../public/logo/fedex.png";
 
 const Partner = () => {
-    const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8,];
+    const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8];
 
     return (
         <Container className="md:mt-36 mt-20">
@@ -25,13 +25,21 @@ const Partner = () => {
 
             {/* Marquee for large screens */}
             <div className="hidden md:block">
-                <Marquee gradient={false} speed={50}>
+                <Marquee
+                    gradient={false}
+                    speed={50}
+                    pauseOnHover={true}
+                    className="overflow-hidden"
+                >
                     {logos.map((logo, index) => (
-                        <div key={index} className="flex items-center mx-5">
+                        <div
+                            key={index}
+                            className="flex items-center justify-center mx-8 min-w-[160px]"
+                        >
                             <Image
                                 src={logo}
                                 alt={`partner-logo-${index}`}
-                                className="h-28 w-auto object-contain transition duration-300 border p-2 rounded-md"
+                                className="h-28 w-auto max-w-[200px] object-contain border p-3 rounded-md bg-white"
                             />
                         </div>
                     ))}
@@ -45,7 +53,7 @@ const Partner = () => {
                         <Image
                             src={logo}
                             alt={`partner-logo-${index}`}
-                            className="h-10 w-auto object-contain transition duration-300 border p-0.5 rounded-md"
+                            className="h-10 w-auto object-contain border p-0.5 rounded-md bg-white"
                         />
                     </div>
                 ))}
