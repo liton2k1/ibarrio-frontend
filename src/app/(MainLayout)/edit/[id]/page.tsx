@@ -21,6 +21,8 @@ const PrivateGuide = () => {
     const { data: guideResponse, isLoading, isError } = useGetGuideByPrivateIdQuery(id);
     const [updateGuide, { isLoading: isUpdating }] = useUpdateGuideMutation();
 
+    console.log(guideResponse);
+
     if (isLoading) return (
         <Container className="max-w-xl mx-auto mt-20">
             <div className="text-center">Loading...</div>

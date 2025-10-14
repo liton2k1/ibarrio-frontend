@@ -60,7 +60,7 @@ export const guideApi = baseApi.injectEndpoints({
             providesTags: ["Guide"],
         }),
 
-        // Get guide by privateId (for editing) - ADD THIS ENDPOINT
+        // Get guide by privateId (for editing)
         getGuideByPrivateId: build.query<GuideResponse, string>({
             query: (privateId) => ({
                 url: `/guide/private/${privateId}`,
@@ -98,7 +98,7 @@ export const {
     useCreateGuideMutation,
     useGetAllGuidesQuery,
     useGetGuideByPublicIdQuery,
-    useGetGuideByPrivateIdQuery, // ADD THIS HOOK
+    useGetGuideByPrivateIdQuery,
     useUpdateGuideMutation,
     useDeleteGuideMutation,
 } = guideApi;
