@@ -24,22 +24,30 @@ const Partner = () => {
             </h1>
 
             {/* Marquee for large screens */}
-            <div className="hidden md:block">
+            <div className="hidden md:block overflow-hidden">
                 <Marquee
                     gradient={false}
-                    speed={50}
+                    speed={30}
                     pauseOnHover={true}
-                    className="overflow-hidden"
+                    pauseOnClick={true}
+                    loop={0}
+                    autoFill={true}
                 >
                     {logos.map((logo, index) => (
                         <div
                             key={index}
-                            className="flex items-center justify-center mx-8 min-w-[160px]"
+                            className="flex items-center justify-center mx-5"
+                            style={{
+                                minWidth: '200px',
+                                transform: 'translateZ(0)',
+                                willChange: 'transform'
+                            }}
                         >
                             <Image
                                 src={logo}
                                 alt={`partner-logo-${index}`}
                                 className="h-28 w-auto max-w-[200px] object-contain border p-3 rounded-md bg-white"
+                                loading="eager"
                             />
                         </div>
                     ))}
