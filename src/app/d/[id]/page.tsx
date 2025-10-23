@@ -3,7 +3,7 @@
 import React from "react";
 import Container from "@/components/Container/Container";
 import Image from "next/image";
-import { Step, useGetGuideByPublicIdQuery } from "@/redux/guideApi"; // Updated import
+import { Step, useGetGuideByPublicIdQuery } from "@/redux/guideApi";
 import { useParams } from "next/navigation";
 import logo from "../../../../public/logo/doorstep.png"
 import Link from "next/link";
@@ -74,7 +74,7 @@ const PublicGuide = () => {
 
             <div className="flex items-center justify-center gap-2 my-20">
                 <p className="text-center text-gray-400">Powered By</p>
-                <Link href="/" className="flex items-center">
+                <Link href="/doorstep.app" className="flex items-center">
                     <Image className="w-24" src={logo} alt="Doorstep Logo" />
                 </Link>
             </div>
