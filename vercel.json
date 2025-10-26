@@ -6,32 +6,30 @@
       "use": "@vercel/next"
     }
   ],
-
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/",
       "has": [
         {
           "type": "host",
           "value": "mydoorstep.app"
         }
       ],
-      "destination": "https://doorstep.app/:path*",
+      "destination": "https://doorstep.app",
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/",
       "has": [
         {
           "type": "host",
           "value": "www.mydoorstep.app"
         }
       ],
-      "destination": "https://doorstep.app/:path*",
+      "destination": "https://doorstep.app",
       "permanent": true
     }
   ],
-  
   "routes": [
     {
       "src": "/api/(.*)",
