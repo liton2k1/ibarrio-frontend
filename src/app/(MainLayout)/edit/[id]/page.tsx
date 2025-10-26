@@ -10,7 +10,7 @@ import { Step, useGetGuideByPrivateIdQuery, useUpdateGuideMutation } from "@/red
 import toast from "react-hot-toast";
 import { useParams } from "next/navigation";
 import logo from "../../../../../public/logo/doorstep.png";
-import Link from "next/link";
+import Link from "next/link"; 
 
 const PrivateGuide = () => {
     const { id } = useParams() as { id: string };
