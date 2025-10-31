@@ -6,6 +6,13 @@
       "use": "@vercel/next"
     }
   ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://doorstep.app/$1",
+      "permanent": true
+    }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
