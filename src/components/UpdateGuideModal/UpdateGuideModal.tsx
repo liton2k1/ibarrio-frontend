@@ -77,7 +77,7 @@ const UpdateGuideModal = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-xl mx-auto">
                 <DialogHeader>
                     <DialogTitle>Update Guide</DialogTitle>
                 </DialogHeader>
