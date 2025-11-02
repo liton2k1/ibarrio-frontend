@@ -74,7 +74,7 @@ const PublicGuide = () => {
 
             <div className="flex items-center justify-center gap-2 my-20">
                 <p className="text-center text-gray-400">Powered By</p>
-                <Link href="/doorstep.app" className="flex items-center">
+                <Link href="/" className="flex items-center">
                     <Image className="w-24" src={logo} alt="Doorstep Logo" />
                 </Link>
             </div>
